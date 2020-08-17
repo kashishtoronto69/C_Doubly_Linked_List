@@ -1,0 +1,118 @@
+//Computational Complexity analysis
+//we are using while loop in insertSorted function
+//according to me it is an insertion sort 'cause we are taking each value in turn and
+//putting it in its appropriate place
+//the worst case would be O(n^2) and roughtly it is O(n)
+
+
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<stdbool.h>
+typedef struct name{
+	char str[100];
+	struct name* prev;
+	struct name* next;
+}Names;
+Names* head = NULL;
+Names* tail = NULL;
+Names* createString(char str[]){
+	Names* nd = (Names*)malloc(sizeof(Names));
+	strcpy(nd->str, str); 
+	nd->next=NULL;
+	nd->prev=NULL;
+	return nd;
+}
+void appendString(char str[]){
+	Names* nd = createString(str);
+	if(head == NULL){
+		head = nd;
+	}
+	else{
+		tail->next = nd; // make the old tail node point at the new one
+		nd->prev = tail; //make the new node point back at the old tail
+	}
+	tail = nd; // New node becomes the  new tail
+}
+void addString(char str[]){
+	Names* nd = createString(str);
+	if(tail == NULL){
+		tail=nd;
+	}
+	else{
+		head->prev=nd;
+		nd->next=head;
+	}
+	head=nd;
+}
+void insertString(Names* loc, char str[]){
+	Names* nd = createString(str);
+	if(loc->next!=NULL){
+		loc->next->prev = nd;
+	}
+	nd->next = loc->next;
+	loc->next = nd;
+	nd->prev = loc;
+	if(loc == tail)
+		tail = nd;
+}
+void insertSorted(char strl[]){
+	Names* nd = createString(strl);
+	Names* temp;
+	//if the list is empty, append a string and if there is only one element, check it using strcmp and do append or add based on result
+	if(head==NULL)
+		appendString(strl);
+	else if(strcmp(strl,head->str)<0){
+		addString(strl);	
+	}
+		
+	else{
+	temp = head;
+	//if the list has some elements, compare it and insertString is used if the entered string is more than previous one
+	while(temp->next!=NULL && strcmp(strl,temp->next->str)>0){
+		temp = temp -> next;
+	}
+	insertString(temp, strl);
+}
+	
+}
+void deleteString(Names* nd){
+	if(nd == head)
+		head = nd->next;
+	if(nd==tail)
+		tail = nd->prev;
+	if(nd->next != NULL)
+		nd->next->prev = nd->prev;
+	if(nd->prev!=NULL)
+		nd->prev->next = nd->next;
+	free(nd);//deallocate the deleted node
+}
+
+void printString(Names* nd, bool forward) {
+    // Loop as long as there are more nodes
+    Names* temp = nd;
+    while (temp != NULL) {
+        printf("%s\n", temp->str);
+        if (forward)
+            temp = temp->next; // Go to the next node
+        else
+            temp = temp->prev; // Go to the previous node
+    }
+}
+
+int main(int argc, char** argv){
+	const int size=4;
+	printf("Please enter %d strings for the initial linked list: ", size);
+	for(int i=0; i<size; i++){
+		char str[100];
+		scanf("%s", str);
+		
+		insertSorted(str);
+	}
+//		insertSorted("Henry");
+//		insertSorted("Arun");
+//		insertSorted("Ravina");
+//		insertSorted("Gina");
+		printString(head, true);
+	
+}
